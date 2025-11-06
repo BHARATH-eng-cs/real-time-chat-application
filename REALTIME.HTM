@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Real-Time Chat</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    header {
+      background: #333;
+      color: #fff;
+      padding: 10px;
+      text-align: center;
+    }
+    #chat {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      background: #fff;
+    }
+    .message {
+      margin: 5px 0;
+      padding: 8px;
+      border-radius: 5px;
+      max-width: 70%;
+    }
+    .sent {
+      background: #dcf8c6;
+      align-self: flex-end;
+    }
+    .received {
+      background: #eee;
+      align-self: flex-start;
+    }
+    #inputArea {
+      display: flex;
+      padding: 10px;
+      background: #ddd;
+    }
+    #messageInput {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+    }
+    #sendBtn {
+      padding: 10px 20px;
+      margin-left: 10px;
+      border: none;
+      background: #333;
+      color: #fff;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h2>Real-Time Chat</h2>
+  </header>
+  <div id="chat"></div>
+  <div id="inputArea">
+    <input type="text" id="messageInput" placeholder="Type a message..." />
+    <button id="sendBtn">Send</button>
+  </div>
+
+  <script>
+    const chat = document.getElementById('chat');
+    const input = document.getElementById('messageInput');
+    const sendBtn = document.getElementById('sendBtn');
+
+    // Connect to WebSocket echo server
+    const socket = new WebSocket('wss://echo.websocket.org');
+
+    socket.onmessage = function(event) {
+      addMessage(event.data, 'received');
+    };
+
+    sendBtn.onclick = function() {
+      const message = input.value.trim();
+      if (message) {
+        socket.send(message);
+        addMessage(message, 'sent');
+        input.value = '';
+      }
+    };
+
+    function addMessage(text, type) {
+      const msg = document.createElement('div');
+      msg.className = `message ${type}`;
+      msg.textContent = text;
+      chat.appendChild(msg);
+      chat.scrollTop = chat.scrollHeight;
+    }
+  </script>
+</body>
+</html>
